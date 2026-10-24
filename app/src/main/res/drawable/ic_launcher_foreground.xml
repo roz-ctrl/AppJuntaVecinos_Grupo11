@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ícono: sede comunitaria (casa) sobre fondo verde -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,32 L76,52 L70,52 L70,76 L38,76 L38,52 L32,52 Z" />
+    <path
+        android:fillColor="@color/ic_launcher_background"
+        android:pathData="M49,62 L59,62 L59,76 L49,76 Z" />
+</vector>

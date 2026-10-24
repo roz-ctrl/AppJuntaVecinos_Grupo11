@@ -2,8 +2,6 @@
 
 Aplicación móvil Android de **gestión de arriendos y transparencia financiera** para la Junta de Vecinos Población Zaror (Cerrillos).
 
-Proyecto semestral de **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC), sección 008D.
-
 ## Integrantes – Grupo 11
 
 - Vicente Ignacio Caba Molina

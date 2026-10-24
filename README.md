@@ -62,12 +62,6 @@ app/src/main/java/cl/duoc/grupo11/juntavecinos/
     └── theme/     → Colores, tipografía y tema Material 3
 ```
 
-## Cómo ejecutar
-
-1. Clonar el repositorio y abrir la carpeta en Android Studio.
-2. Esperar a que termine la sincronización de Gradle.
-3. Seleccionar un emulador o un dispositivo físico (Android 8.0 o superior) y presionar **Run 'app'**.
-
 ## Forma de trabajo
 
 - Rama principal: `main`. Cada funcionalidad se desarrolla en su propia rama `feature/...` (por ejemplo, `feature/home-screen`).

@@ -1,43 +1,45 @@
 package cl.duoc.grupo11.juntavecinos.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import cl.duoc.grupo11.juntavecinos.model.EstadoReserva
 import cl.duoc.grupo11.juntavecinos.model.Reserva
-import cl.duoc.grupo11.juntavecinos.model.TipoMovimiento
-import cl.duoc.grupo11.juntavecinos.repository.JuntaRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import cl.duoc.grupo11.juntavecinos.model.ResumenFinanciero
+import cl.duoc.grupo11.juntavecinos.repository.MovimientoRepository
+import cl.duoc.grupo11.juntavecinos.repository.MovimientoRepositoryMemoria
+import cl.duoc.grupo11.juntavecinos.repository.ReservaRepository
+import cl.duoc.grupo11.juntavecinos.repository.ReservaRepositoryMemoria
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import java.time.LocalDate
 
 // Estado que observa la pantalla de inicio
 data class HomeUiState(
-    val totalIngresos: Int = 0,
-    val totalGastos: Int = 0,
-    val proximasReservas: List<Reserva> = emptyList()
-) {
-    val saldo: Int get() = totalIngresos - totalGastos
-}
+    val resumen: ResumenFinanciero = ResumenFinanciero(),
+    val proximasReservas: List<Reserva> = emptyList(),
+    val reservasPendientes: Int = 0
+)
 
 class HomeViewModel(
-    private val repository: JuntaRepository = JuntaRepository()
+    reservaRepository: ReservaRepository = ReservaRepositoryMemoria,
+    movimientoRepository: MovimientoRepository = MovimientoRepositoryMemoria
 ) : ViewModel() {
 
-    // Estado interno mutable
-    private val _estado = MutableStateFlow(HomeUiState())
-
-    // Estado expuesto a la UI (solo lectura)
-    val estado: StateFlow<HomeUiState> = _estado.asStateFlow()
-
-    init {
-        cargarResumen()
-    }
-
-    // Calcula el resumen financiero y ordena las reservas por fecha
-    private fun cargarResumen() {
-        val movimientos = repository.obtenerMovimientos()
-        _estado.value = HomeUiState(
-            totalIngresos = movimientos.filter { it.tipo == TipoMovimiento.INGRESO }.sumOf { it.monto },
-            totalGastos = movimientos.filter { it.tipo == TipoMovimiento.GASTO }.sumOf { it.monto },
-            proximasReservas = repository.obtenerReservas().sortedBy { it.fecha }
+    // Combina reservas y movimientos en un solo estado para la UI
+    val estado: StateFlow<HomeUiState> = combine(
+        reservaRepository.reservas,
+        movimientoRepository.movimientos
+    ) { reservas, movimientos ->
+        val hoy = LocalDate.now()
+        HomeUiState(
+            resumen = ResumenFinanciero.desde(movimientos),
+            proximasReservas = reservas
+                .filter { it.estaVigente && !it.fecha.isBefore(hoy) }
+                .sortedWith(compareBy({ it.fecha }, { it.horaInicio }))
+                .take(3),
+            reservasPendientes = reservas.count { it.estado == EstadoReserva.PENDIENTE }
         )
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 }

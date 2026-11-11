@@ -23,6 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.grupo11.juntavecinos.model.Dependencia
@@ -47,8 +50,15 @@ fun FormReservaScreen(
     onGuardado: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Al abrir la pantalla se carga la reserva a editar (o un formulario vacío)
-    LaunchedEffect(reservaId) { viewModel.prepararFormulario(reservaId) }
+    // Al abrir la pantalla se carga la reserva a editar (o un formulario vacío).
+    // rememberSaveable evita que se borre lo escrito si se rota la pantalla.
+    var preparado by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(reservaId) {
+        if (!preparado) {
+            viewModel.prepararFormulario(reservaId)
+            preparado = true
+        }
+    }
     val form by viewModel.formulario.collectAsState()
 
     Column(

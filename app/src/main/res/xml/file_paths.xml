@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Carpeta interna donde se guardan las fotos de comprobantes y perfil -->
+<paths>
+    <files-path
+        name="imagenes"
+        path="imagenes/" />
+</paths>

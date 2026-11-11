@@ -40,7 +40,7 @@ object MovimientoRepositoryMemoria : MovimientoRepository {
         val tesoreria = "Ana Fuentes"
         return listOf(
             Movimiento(1, TipoMovimiento.INGRESO, CategoriaMovimiento.ARRIENDO, "Arriendo salón principal (Rosa Díaz)", 25000, hoy.minusDays(6), tesoreria, reservaId = 4),
-            Movimiento(2, TipoMovimiento.INGRESO, CategoriaMovimiento.CUOTA_SOCIAL, "Cuotas sociales del mes", 30000, hoy.minusDays(10), tesoreria),
+            Movimiento(2, TipoMovimiento.INGRESO, CategoriaMovimiento.CUOTA_SOCIAL, "Cuotas sociales del mes", 45000, hoy.minusDays(10), tesoreria),
             Movimiento(3, TipoMovimiento.GASTO, CategoriaMovimiento.LUZ, "Boleta de luz de la sede", 18500, hoy.minusDays(8), tesoreria),
             Movimiento(4, TipoMovimiento.GASTO, CategoriaMovimiento.AGUA, "Boleta de agua de la sede", 9200, hoy.minusDays(7), tesoreria),
             Movimiento(5, TipoMovimiento.GASTO, CategoriaMovimiento.INTERNET, "Plan de internet de la sede", 15990, hoy.minusDays(4), tesoreria),

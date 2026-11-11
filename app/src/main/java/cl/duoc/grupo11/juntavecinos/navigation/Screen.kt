@@ -11,7 +11,7 @@ sealed class Screen(val route: String, val titulo: String) {
     data object FormMovimiento : Screen("form_movimiento", "Nuevo movimiento")
 
     // Ruta con argumento: id de la reserva a editar (-1 = nueva reserva)
-    data object FormReserva : Screen("form_reserva/{reservaId}", "Reserva") {
+    data object FormReserva : Screen("form_reserva/{reservaId}", "Solicitud de reserva") {
         const val ARG_ID = "reservaId"
         const val NUEVA = -1
         fun crearRuta(reservaId: Int = NUEVA): String = "form_reserva/$reservaId"

@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cl.duoc.grupo11.juntavecinos.model.Dependencia
 import cl.duoc.grupo11.juntavecinos.model.Usuario
@@ -34,6 +35,7 @@ import cl.duoc.grupo11.juntavecinos.ui.components.CampoFecha
 import cl.duoc.grupo11.juntavecinos.ui.components.SelectorDesplegable
 import cl.duoc.grupo11.juntavecinos.util.comoPesos
 import cl.duoc.grupo11.juntavecinos.util.comoTexto
+import cl.duoc.grupo11.juntavecinos.util.mostrarNotificacion
 import cl.duoc.grupo11.juntavecinos.viewmodel.ReservaViewModel
 import java.time.LocalTime
 
@@ -60,6 +62,7 @@ fun FormReservaScreen(
         }
     }
     val form by viewModel.formulario.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -143,7 +146,17 @@ fun FormReservaScreen(
         }
 
         Button(
-            onClick = { if (viewModel.guardar(usuario)) onGuardado() },
+            onClick = {
+                val eraEdicion = form.esEdicion
+                if (viewModel.guardar(usuario)) {
+                    mostrarNotificacion(
+                        context,
+                        if (eraEdicion) "Solicitud actualizada" else "Solicitud enviada",
+                        "Tu solicitud quedó pendiente de aprobación de la directiva"
+                    )
+                    onGuardado()
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(if (form.esEdicion) "Guardar cambios" else "Enviar solicitud")

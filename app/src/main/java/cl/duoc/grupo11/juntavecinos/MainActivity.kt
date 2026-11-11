@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duoc.grupo11.juntavecinos.navigation.AppNavigation
 import cl.duoc.grupo11.juntavecinos.ui.theme.AppJuntaVecinosTheme
 import cl.duoc.grupo11.juntavecinos.ui.utils.obtenerWindowSizeClass
+import cl.duoc.grupo11.juntavecinos.util.crearCanalNotificaciones
 import cl.duoc.grupo11.juntavecinos.viewmodel.PreferenciasViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.SesionViewModel
 
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        crearCanalNotificaciones(this)
         setContent {
             val preferenciasViewModel: PreferenciasViewModel = viewModel()
             val modoOscuro by preferenciasViewModel.modoOscuro.collectAsState()

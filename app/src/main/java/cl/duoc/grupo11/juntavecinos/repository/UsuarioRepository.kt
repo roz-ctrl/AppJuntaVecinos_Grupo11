@@ -1,12 +1,17 @@
 package cl.duoc.grupo11.juntavecinos.repository
 
 import cl.duoc.grupo11.juntavecinos.model.Directiva
+import cl.duoc.grupo11.juntavecinos.model.Rol
 import cl.duoc.grupo11.juntavecinos.model.Tesorero
 import cl.duoc.grupo11.juntavecinos.model.Usuario
 import cl.duoc.grupo11.juntavecinos.model.Vecino
 
+// Credenciales ficticias que se muestran en el login para facilitar la demostración
+data class CuentaPrueba(val rol: Rol, val correo: String, val clave: String)
+
 // Contrato del origen de datos de usuarios
 interface UsuarioRepository {
+    val cuentasDePrueba: List<CuentaPrueba>
     fun autenticar(correo: String, clave: String): Usuario?
     fun obtenerTodos(): List<Usuario>
 }
@@ -19,6 +24,12 @@ object UsuarioRepositoryMemoria : UsuarioRepository {
         Vecino(1, "María Pérez", "vecino@zaror.cl", "vecino123"),
         Directiva(2, "Luis Soto", "directiva@zaror.cl", "directiva123"),
         Tesorero(3, "Ana Fuentes", "tesoreria@zaror.cl", "tesoreria123")
+    )
+
+    override val cuentasDePrueba: List<CuentaPrueba> = listOf(
+        CuentaPrueba(Rol.VECINO, "vecino@zaror.cl", "vecino123"),
+        CuentaPrueba(Rol.DIRECTIVA, "directiva@zaror.cl", "directiva123"),
+        CuentaPrueba(Rol.TESORERIA, "tesoreria@zaror.cl", "tesoreria123")
     )
 
     override fun autenticar(correo: String, clave: String): Usuario? =

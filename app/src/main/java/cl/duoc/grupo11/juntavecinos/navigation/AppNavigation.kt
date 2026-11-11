@@ -1,5 +1,9 @@
 package cl.duoc.grupo11.juntavecinos.navigation
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -43,6 +48,7 @@ import cl.duoc.grupo11.juntavecinos.ui.screens.HomeScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.LoginScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.PerfilScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.ReservasScreen
+import cl.duoc.grupo11.juntavecinos.util.tienePermisoNotificaciones
 import cl.duoc.grupo11.juntavecinos.viewmodel.FinanzasViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.ReservaViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.SesionViewModel
@@ -60,9 +66,12 @@ private fun Screen.icono(): ImageVector = when (this) {
 fun AppNavigation(
     sesionViewModel: SesionViewModel,
     anchoVentana: WindowWidthSizeClass,
+    modoOscuro: Boolean,
+    onModoOscuroChange: (Boolean) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val usuario by sesionViewModel.usuario.collectAsState()
+    val fotoPerfil by sesionViewModel.fotoPerfil.collectAsState()
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
     val pantallaActual = Screen.desdeRuta(rutaActual)
@@ -87,6 +96,19 @@ fun AppNavigation(
     fun irAlLogin() {
         navController.navigate(Screen.Login.route) {
             popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
+
+    // Después de iniciar sesión se pide el permiso de notificaciones (Android 13 o superior)
+    val context = LocalContext.current
+    val lanzadorPermisoNotificaciones = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* Si se rechaza, la app funciona igual pero sin avisos */ }
+    LaunchedEffect(usuario) {
+        if (usuario != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !tienePermisoNotificaciones(context)
+        ) {
+            lanzadorPermisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -188,6 +210,10 @@ fun AppNavigation(
                 composable(Screen.Perfil.route) {
                     PerfilScreen(
                         usuario = usuario,
+                        fotoPerfil = fotoPerfil,
+                        onFotoSeleccionada = sesionViewModel::actualizarFotoPerfil,
+                        modoOscuro = modoOscuro,
+                        onModoOscuroChange = onModoOscuroChange,
                         onCerrarSesion = {
                             sesionViewModel.cerrarSesion()
                             irAlLogin()

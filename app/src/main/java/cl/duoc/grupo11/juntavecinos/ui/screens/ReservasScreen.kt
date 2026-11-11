@@ -34,12 +34,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cl.duoc.grupo11.juntavecinos.model.EstadoReserva
 import cl.duoc.grupo11.juntavecinos.model.Reserva
 import cl.duoc.grupo11.juntavecinos.model.Usuario
 import cl.duoc.grupo11.juntavecinos.ui.components.MensajeExito
 import cl.duoc.grupo11.juntavecinos.ui.components.TarjetaReserva
+import cl.duoc.grupo11.juntavecinos.util.comoPesos
+import cl.duoc.grupo11.juntavecinos.util.comoTexto
+import cl.duoc.grupo11.juntavecinos.util.mostrarNotificacion
 import cl.duoc.grupo11.juntavecinos.viewmodel.FiltroReserva
 import cl.duoc.grupo11.juntavecinos.viewmodel.ReservaViewModel
 
@@ -150,7 +154,9 @@ private fun RowScope.AccionesReserva(
     onEditar: (Int) -> Unit,
     onEliminar: (Reserva) -> Unit
 ) {
+    val context = LocalContext.current
     val esSolicitante = usuario?.id == reserva.solicitanteId
+    val detalle = "${reserva.dependencia.nombre} el ${reserva.fecha.comoTexto()} (${reserva.solicitante})"
     val esPendiente = reserva.estado == EstadoReserva.PENDIENTE
 
     if (esSolicitante && esPendiente) {
@@ -158,11 +164,20 @@ private fun RowScope.AccionesReserva(
         TextButton(onClick = { onEditar(reserva.id) }) { Text("Editar") }
     }
     if (usuario?.puedeGestionarReservas == true && esPendiente) {
-        OutlinedButton(onClick = { viewModel.rechazar(reserva, usuario) }) { Text("Rechazar") }
-        Button(onClick = { viewModel.aprobar(reserva, usuario) }) { Text("Aprobar") }
+        OutlinedButton(onClick = {
+            viewModel.rechazar(reserva, usuario)
+            mostrarNotificacion(context, "Reserva rechazada", detalle)
+        }) { Text("Rechazar") }
+        Button(onClick = {
+            viewModel.aprobar(reserva, usuario)
+            mostrarNotificacion(context, "Reserva confirmada", detalle)
+        }) { Text("Aprobar") }
     }
     if (usuario?.puedeRegistrarMovimientos == true && reserva.estado == EstadoReserva.CONFIRMADA && !reserva.pagada) {
-        Button(onClick = { viewModel.registrarPago(reserva, usuario) }) { Text("Registrar pago") }
+        Button(onClick = {
+            viewModel.registrarPago(reserva, usuario)
+            mostrarNotificacion(context, "Pago registrado", "Arriendo de $detalle por ${reserva.monto.comoPesos()}")
+        }) { Text("Registrar pago") }
     }
     if (usuario?.puedeGestionarReservas == true && !reserva.estaVigente) {
         IconButton(onClick = { onEliminar(reserva) }) {

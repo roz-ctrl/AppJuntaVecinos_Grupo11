@@ -2,6 +2,8 @@ package cl.duoc.grupo11.juntavecinos.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +23,7 @@ import cl.duoc.grupo11.juntavecinos.util.comoTextoLargo
 
 // Tarjeta reutilizable de una reserva. Las acciones (botones) dependen del perfil
 // y las define cada pantalla.
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TarjetaReserva(
     reserva: Reserva,
@@ -51,12 +54,14 @@ fun TarjetaReserva(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            Row(
+            // FlowRow: si los botones no caben en una línea, pasan a la siguiente
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-                verticalAlignment = Alignment.CenterVertically,
-                content = acciones
-            )
+                itemVerticalAlignment = Alignment.CenterVertically
+            ) {
+                acciones()
+            }
         }
     }
 }

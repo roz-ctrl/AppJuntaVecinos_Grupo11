@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
@@ -36,9 +37,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cl.duoc.grupo11.juntavecinos.ui.screens.EnConstruccion
+import cl.duoc.grupo11.juntavecinos.ui.screens.FormReservaScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.HomeScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.LoginScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.PerfilScreen
+import cl.duoc.grupo11.juntavecinos.ui.screens.ReservasScreen
+import cl.duoc.grupo11.juntavecinos.viewmodel.ReservaViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.SesionViewModel
 
 // Ícono de cada destino principal
@@ -61,6 +65,9 @@ fun AppNavigation(
     val rutaActual = entradaActual?.destination?.route
     val pantallaActual = Screen.desdeRuta(rutaActual)
     val esPrincipal = pantallaActual in Screen.principales
+
+    // ViewModels compartidos entre cada lista y su formulario (se crean una sola vez)
+    val reservaViewModel: ReservaViewModel = viewModel()
 
     // Diseño adaptable: barra inferior en teléfonos y riel lateral en pantallas medianas o grandes
     val usarRielLateral = anchoVentana != WindowWidthSizeClass.Compact
@@ -161,7 +168,12 @@ fun AppNavigation(
                     )
                 }
                 composable(Screen.Reservas.route) {
-                    EnConstruccion(titulo = Screen.Reservas.titulo)
+                    ReservasScreen(
+                        usuario = usuario,
+                        viewModel = reservaViewModel,
+                        onNuevaReserva = { navController.navigate(Screen.FormReserva.crearRuta()) },
+                        onEditarReserva = { id -> navController.navigate(Screen.FormReserva.crearRuta(id)) }
+                    )
                 }
                 composable(Screen.Finanzas.route) {
                     EnConstruccion(titulo = Screen.Finanzas.titulo)
@@ -178,8 +190,18 @@ fun AppNavigation(
                 composable(
                     route = Screen.FormReserva.route,
                     arguments = listOf(navArgument(Screen.FormReserva.ARG_ID) { type = NavType.IntType })
-                ) {
-                    EnConstruccion(titulo = Screen.FormReserva.titulo)
+                ) { entrada ->
+                    val reservaId = entrada.arguments?.getInt(Screen.FormReserva.ARG_ID) ?: Screen.FormReserva.NUEVA
+                    FormReservaScreen(
+                        reservaId = reservaId,
+                        usuario = usuario,
+                        viewModel = reservaViewModel,
+                        onGuardado = {
+                            // Vuelve a la lista de reservas, donde se ve el mensaje de confirmación
+                            navController.popBackStack()
+                            navegarPrincipal(Screen.Reservas)
+                        }
+                    )
                 }
                 composable(Screen.FormMovimiento.route) {
                     EnConstruccion(titulo = Screen.FormMovimiento.titulo)

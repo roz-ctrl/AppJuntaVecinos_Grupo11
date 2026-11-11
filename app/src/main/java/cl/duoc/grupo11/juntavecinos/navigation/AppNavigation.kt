@@ -36,12 +36,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import cl.duoc.grupo11.juntavecinos.ui.screens.EnConstruccion
+import cl.duoc.grupo11.juntavecinos.ui.screens.FinanzasScreen
+import cl.duoc.grupo11.juntavecinos.ui.screens.FormMovimientoScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.FormReservaScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.HomeScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.LoginScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.PerfilScreen
 import cl.duoc.grupo11.juntavecinos.ui.screens.ReservasScreen
+import cl.duoc.grupo11.juntavecinos.viewmodel.FinanzasViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.ReservaViewModel
 import cl.duoc.grupo11.juntavecinos.viewmodel.SesionViewModel
 
@@ -68,6 +70,7 @@ fun AppNavigation(
 
     // ViewModels compartidos entre cada lista y su formulario (se crean una sola vez)
     val reservaViewModel: ReservaViewModel = viewModel()
+    val finanzasViewModel: FinanzasViewModel = viewModel()
 
     // Diseño adaptable: barra inferior en teléfonos y riel lateral en pantallas medianas o grandes
     val usarRielLateral = anchoVentana != WindowWidthSizeClass.Compact
@@ -176,7 +179,11 @@ fun AppNavigation(
                     )
                 }
                 composable(Screen.Finanzas.route) {
-                    EnConstruccion(titulo = Screen.Finanzas.titulo)
+                    FinanzasScreen(
+                        usuario = usuario,
+                        viewModel = finanzasViewModel,
+                        onNuevoMovimiento = { navController.navigate(Screen.FormMovimiento.route) }
+                    )
                 }
                 composable(Screen.Perfil.route) {
                     PerfilScreen(
@@ -204,7 +211,15 @@ fun AppNavigation(
                     )
                 }
                 composable(Screen.FormMovimiento.route) {
-                    EnConstruccion(titulo = Screen.FormMovimiento.titulo)
+                    FormMovimientoScreen(
+                        usuario = usuario,
+                        viewModel = finanzasViewModel,
+                        onGuardado = {
+                            // Vuelve a finanzas, donde se ve el mensaje de confirmación
+                            navController.popBackStack()
+                            navegarPrincipal(Screen.Finanzas)
+                        }
+                    )
                 }
             }
         }

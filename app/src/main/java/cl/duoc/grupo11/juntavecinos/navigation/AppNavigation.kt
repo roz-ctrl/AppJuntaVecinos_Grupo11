@@ -60,9 +60,12 @@ private fun Screen.icono(): ImageVector = when (this) {
 fun AppNavigation(
     sesionViewModel: SesionViewModel,
     anchoVentana: WindowWidthSizeClass,
+    modoOscuro: Boolean,
+    onModoOscuroChange: (Boolean) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val usuario by sesionViewModel.usuario.collectAsState()
+    val fotoPerfil by sesionViewModel.fotoPerfil.collectAsState()
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route
     val pantallaActual = Screen.desdeRuta(rutaActual)
@@ -188,6 +191,10 @@ fun AppNavigation(
                 composable(Screen.Perfil.route) {
                     PerfilScreen(
                         usuario = usuario,
+                        fotoPerfil = fotoPerfil,
+                        onFotoSeleccionada = sesionViewModel::actualizarFotoPerfil,
+                        modoOscuro = modoOscuro,
+                        onModoOscuroChange = onModoOscuroChange,
                         onCerrarSesion = {
                             sesionViewModel.cerrarSesion()
                             irAlLogin()

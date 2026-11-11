@@ -1,5 +1,6 @@
 package cl.duoc.grupo11.juntavecinos.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,13 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,10 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.grupo11.juntavecinos.model.Usuario
+import cl.duoc.grupo11.juntavecinos.ui.components.BotonesImagen
+import cl.duoc.grupo11.juntavecinos.ui.components.ImagenInteligente
 
 @Composable
 fun PerfilScreen(
     usuario: Usuario?,
+    fotoPerfil: Uri?,
+    onFotoSeleccionada: (Uri) -> Unit,
+    modoOscuro: Boolean,
+    onModoOscuroChange: (Boolean) -> Unit,
     onCerrarSesion: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,12 +57,10 @@ fun PerfilScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Icon(
-            imageVector = Icons.Filled.AccountCircle,
-            contentDescription = null,
-            modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
+        // Foto de perfil con recursos nativos (cámara o galería)
+        ImagenInteligente(uri = fotoPerfil)
+        BotonesImagen(prefijoArchivo = "perfil", onImagenSeleccionada = onFotoSeleccionada)
+
         Text(text = usuario?.nombre.orEmpty(), style = MaterialTheme.typography.headlineSmall)
         Text(text = usuario?.correo.orEmpty(), style = MaterialTheme.typography.bodyMedium)
         Text(
@@ -82,6 +88,26 @@ fun PerfilScreen(
                         Text(text = permiso)
                     }
                 }
+            }
+        }
+
+        // Preferencia guardada con DataStore: se mantiene al cerrar la app
+        Card(modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth()) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Filled.DarkMode, contentDescription = null)
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Modo oscuro", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = "Se guarda en el dispositivo",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(checked = modoOscuro, onCheckedChange = onModoOscuroChange)
             }
         }
 

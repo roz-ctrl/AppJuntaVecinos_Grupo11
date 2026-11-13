@@ -12,3 +12,4 @@ local.properties
 *.aab
 *.jks
 *.keystore
+gradle/gradle-daemon-jvm.properties

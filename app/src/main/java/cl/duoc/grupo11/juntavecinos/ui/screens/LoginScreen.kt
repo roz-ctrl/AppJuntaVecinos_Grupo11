@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.HomeWork
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -41,7 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duoc.grupo11.juntavecinos.model.Usuario
 import cl.duoc.grupo11.juntavecinos.viewmodel.LoginViewModel
-
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import cl.duoc.grupo11.juntavecinos.R
 @Composable
 fun LoginScreen(
     onLoginExitoso: (Usuario) -> Unit,
@@ -59,11 +61,11 @@ fun LoginScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Spacer(modifier = Modifier.height(24.dp))
-        Icon(
-            imageVector = Icons.Filled.HomeWork,
-            contentDescription = null,
-            modifier = Modifier.size(72.dp),
-            tint = MaterialTheme.colorScheme.primary
+        Image(
+            painter = painterResource(id = R.drawable.logo_juntavecinos_verde),
+            contentDescription = "Logo Junta de Vecinos Zaror",
+            modifier = Modifier.size(130.dp),
+            contentScale = ContentScale.Fit
         )
         Text(text = "Junta de Vecinos Zaror", style = MaterialTheme.typography.headlineSmall)
         Text(
